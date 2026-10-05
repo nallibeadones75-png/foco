@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOCO — Panel de Productividad Estudiantil</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+        colors: {
+          brand: { 
+            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 
+            500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 900: '#312e81', 950: '#1e1b4b' 
+          }
+        },
+        animation: {
+          'fade-in': 'fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          'slide-up': 'slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          'scale-in': 'scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        },
+        keyframes: {
+          fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+          slideUp: { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+          scaleIn: { '0%': { opacity: '0', transform: 'scale(0.97)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+  }
+  .dark .glass-panel {
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(51, 65, 85, 0.8);
+  }
+</style>
+</head>
+<body class="h-full bg-[#f8fafc] dark:bg-[#0f172a] text-slate-800 dark:text-slate-100 antialiased selection:bg-brand-500 selection:text-white transition-colors duration-300 overflow-hidden">
+
+<div class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col justify-between shrink-0 select-none z-30 transition-colors">
+    <div class="p-6 overflow-y-auto">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-xl tracking-tight leading-none text-slate-900 dark:text-white">FOCO</h1>
+          <p class="text-[11px] font-medium text-slate-400 mt-0.5">Tu semestre en foco</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="space-y-1.5">
+        <button onclick="switchTab('inicio')" id="nav-inicio" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          Inicio
+        </button>
+        <button onclick="switchTab('actividades')" id="nav-actividades" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+          Mis actividades
+        </button>
+        <button onclick="switchTab('calendario')" id="nav-calendario" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Calendario
+        </button>
+        <button onclick="switchTab('estadisticas')" id="nav-estadisticas" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          Estadísticas
+        </button>
+        <button onclick="switchTab('pomodoro')" id="nav-pomodoro" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          Pomodoro
+        </button>
+        <button onclick="switchTab('notas')" id="nav-notas" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+          Notas rápidas
+        </button>
+      </nav>
+
+      <!-- Asignaturas Sidebar -->
+      <div class="mt-8">
+        <div class="flex items-center justify-between mb-3 px-1">
+          <span class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Asignaturas</span>
+          <button onclick="openSubjectModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+          </button>
+        </div>
+        <div id="sidebar-subjects" class="space-y-1.5">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 m-4 rounded-3xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 flex flex-col gap-2">
+      <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
+        Consejo FOCO
+      </div>
+      <p class="text-[11px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed">Disciplina hoy, oportunidades mañana.</p>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    
+    <!-- TOPBAR -->
+    <header class="h-20 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-8 flex items-center justify-between z-20 shrink-0">
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          </span>
+          <input id="global-search" oninput="handleGlobalSearch(this.value)" class="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 transition-all" placeholder="Buscar actividades, asignaturas...">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-amber-400 transition-all shadow-sm" title="Cambiar tema">
+          <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"></path></svg>
+        </button>
+
+        <button onclick="openProfileModal()" class="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+          <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-sm" id="user-avatar-initial">A</div>
+          <span class="text-sm font-bold text-slate-700 dark:text-slate-200" id="user-name-display">Alex</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT VIEWS CONTAINER -->
+    <main class="flex-1 overflow-y-auto p-8 relative" id="main-container">
+      <!-- Dynamic View Injection Here -->
+    </main>
+
+  </div>
+</div>
+
+<!-- MODALS & CAMERA SIMULATOR -->
+<!-- Camera Simulator Modal -->
+<div id="camera-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md hidden animate-fade-in">
+  <div class="glass-panel rounded-3xl p-6 max-w-md w-full shadow-2xl animate-scale-in">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-extrabold flex items-center gap-2">
+        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+        Simulador de Cámara / Evidencia
+      </h3>
+      <button onclick="closeCameraModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl h-56 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-800/50 relative overflow-hidden group">
+        <div id="camera-preview" class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+          <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3 shadow-sm">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+          </div>
+          <p class="text-sm font-bold text-slate-700 dark:text-slate-200">Enfoque tu trabajo o tarea</p>
+          <p class="text-xs text-slate-400 mt-1">Haz clic en disparar para adjuntar evidencia fotográfica</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="simulateCapturePhoto()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-2xl transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 text-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+          Disparar / Capturar foto
+        </button>
+        <button onclick="closeCameraModal()" class="px-4 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-slate-700 dark:text-slate-200 rounded-2xl transition-all text-sm">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Task Modal (Add / Edit) -->
+<div id="task-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md hidden animate-fade-in">
+  <div class="glass-panel rounded-3xl p-6 max-w-lg w-full shadow-2xl animate-scale-in">
+    <div class="flex items-center justify-between mb-5 pb-3 border-b border-slate-100 dark:border-slate-800">
+      <h3 id="task-modal-title" class="text-lg font-extrabold flex items-center gap-2">Nueva Actividad</h3>
+      <button onclick="closeTaskModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <input type="hidden" id="edit-task-id">
+      <div>
+        <label class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Nombre de la actividad</label>
+        <input id="modal-f-name" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-brand-500 outline-none font-semibold text-sm" placeholder="Ej. Ensayo final arquitectura">
+      </div>
+      <div>
+        <label class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Asignatura</label>
+        <select id="modal-f-subject" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-brand-500 outline-none font-semibold text-sm cursor-pointer">
+          <!-- Dynamically populated -->
+        </select>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Fecha límite</label>
+          <input id="modal-f-date" type="date" class="w-full px-3 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-brand-500 outline-none font-semibold text-xs sm:text-sm">
+        </div>
+        <div>
+          <label class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Tipo</label>
+          <select id="modal-f-type" class="w-full px-3 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-brand-500 outline-none font-semibold text-xs sm:text-sm cursor-pointer">
+            <option>Entrega</option>
+            <option>Prueba</option>
+            <option>Presentación</option>
+            <option>Trabajo</option>
+            <option>Lectura</option>
+            <option>Otro</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Prioridad</label>
+        <select id="modal-f-priority" class="w-full px-3 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-brand-500 outline-none font-semibold text-xs sm:text-sm cursor-pointer">
+          <option value="Alta">Alta 🔥</option>
+          <option value="Media" selected>Media</option>
+          <option value="Baja">Baja 🟢</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+      <button onclick="saveTaskModal()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-2xl transition-all shadow-lg shadow-indigo-500/25 text-sm">Guardar Actividad</button>
+      <button onclick="closeTaskModal()" class="px-4 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-slate-700 dark:text-slate-200 rounded-2xl text-sm">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profile-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md hidden animate-fade-in">
+  <div class="glass-panel rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-scale-in text-center">
+    <div class="w-16 h-16 rounded-2xl bg-indigo-600 text-white font-extrabold flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg shadow-indigo-500/30" id="profile-modal-initial">A</div>
+    <h3 class="text-lg font-extrabold mb-1" id="profile-modal-name">Alex</h3>
+    <p class="text-xs text-slate-400 mb-6">Estudiante Universitario · FOCO Pro</p>
+    <div class="space-y-3 text-left mb-6">
+      <div>
+        <label class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Nombre de usuario</label>
+        <input id="input-profile-name" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold outline-none" value="Alex">
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="closeProfileModal()" class="py-3 px-4 rounded-xl font-bold text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">Cancelar</button>
+      <button onclick="saveProfile()" class="py-3 px-4 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/25">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Subject Modal -->
+<div id="subject-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md hidden animate-fade-in">
+  <div class="glass-panel rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-scale-in">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-extrabold">Nueva Asignatura</h3>
+      <button onclick="closeSubjectModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-xl">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Nombre del Ramo</label>
+        <input id="new-subject-name" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold outline-none" placeholder="Ej. Inteligencia Artificial">
+      </div>
+      <div>
+        <label class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Color distintivo</label>
+        <select id="new-subject-color" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold outline-none cursor-pointer">
+          <option value="bg-indigo-500">Índigo / Azul</option>
+          <option value="bg-blue-500">Celeste / Azul</option>
+          <option value="bg-amber-500">Ámbar / Naranjo</option>
+          <option value="bg-emerald-500">Esmeralda / Verde</option>
+          <option value="bg-rose-500">Rosa / Magenta</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 mt-6">
+      <button onclick="saveNewSubject()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-2xl text-sm shadow-lg shadow-indigo-500/25">Agregar Asignatura</button>
+      <button onclick="closeSubjectModal()" class="px-4 py-3 bg-slate-100 dark:bg-slate-800 font-bold text-sm rounded-2xl">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- MAIN SCRIPT LOGIC -->
+<script>
+// --- APP STATE & INITIALIZATION ---
+let currentTab = 'inicio';
+let darkMode = localStorage.getItem('foco_dark') === 'true';
+let userProfile = JSON.parse(localStorage.getItem('foco_profile') || '{"name": "Alex"}');
+
+let subjects = JSON.parse(localStorage.getItem('foco_subjects') || JSON.stringify([
+  {name: 'Programación', color: 'bg-indigo-500'},
+  {name: 'Matemáticas', color: 'bg-blue-500'},
+  {name: 'Historia', color: 'bg-amber-500'},
+  {name: 'Biología', color: 'bg-emerald-500'},
+  {name: 'Inglés', color: 'bg-rose-500'}
+]));
+
+let tasks = JSON.parse(localStorage.getItem('foco_tasks_v5') || JSON.stringify([
+  {id: 1, name: 'Estudiar para prueba', subject: 'Matemáticas', date: '2026-10-15', type: 'Prueba', priority: 'Alta', done: false, photo: null},
+  {id: 2, name: 'Entrega de prototipo final', subject: 'Programación', date: '2026-10-16', type: 'Entrega', priority: 'Alta', done: false, photo: null},
+  {id: 3, name: 'Presentación grupal', subject: 'Historia', date: '2026-10-18', type: 'Presentación', priority: 'Media', done: false, photo: null},
+  {id: 4, name: 'Leer artículo científico', subject: 'Inglés', date: '2026-10-12', type: 'Lectura', priority: 'Baja', done: true, photo: 'notebook'},
+  {id: 5, name: 'Resumen capítulo 4', subject: 'Biología', date: '2026-10-20', type: 'Trabajo', priority: 'Media', done: false, photo: null},
+  {id: 6, name: 'Guía de ejercicios', subject: 'Matemáticas', date: '2026-10-22', type: 'Trabajo', priority: 'Baja', done: false, photo: null}
+]));
+
+let notes = JSON.parse(localStorage.getItem('foco_notes') || JSON.stringify([
+  {id: 1, text: 'Llevar calculadora científica a la clase de Matemáticas del martes.', color: 'yellow', date: '04 Oct'},
+  {id: 2, text: 'Revisar rúbrica de entrega del prototipo con el profesor guía.', color: 'blue', date: '02 Oct'}
+]));
+
+// Pomodoro State
+let pomodoroMinutes = 25;
+let pomodoroSeconds = 0;
+let pomodoroRunning = false;
+let pomodoroInterval = null;
+let pomodoroMode = 'work'; // work, shortBreak, longBreak
+let workDuration = 25;
+let breakDuration = 5;
+
+// Active task for camera attachment
+let photoTargetTaskId = null;
+let globalSearchQuery = '';
+
+// Today date setup
+const today = new Date();
+today.setHours(0,0,0,0);
+
+// Initialize UI theme
+if (darkMode) {
+  document.documentElement.classList.add('dark');
+}
+
+function saveData() {
+  localStorage.setItem('foco_tasks_v5', JSON.stringify(tasks));
+  localStorage.setItem('foco_subjects', JSON.stringify(subjects));
+  localStorage.setItem('foco_notes', JSON.stringify(notes));
+  localStorage.setItem('foco_profile', JSON.stringify(userProfile));
+  localStorage.setItem('foco_dark', darkMode);
+}
+
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  const bg = type === 'success' ? 'bg-slate-900 text-white dark:bg-slate-800 border-slate-700' : 'bg-rose-600 text-white border-rose-500';
+  toast.className = `${bg} px-4 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2.5 pointer-events-auto animate-slide-up border`;
+  toast.innerHTML = `<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    toast.style.transition = 'all 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+function toggleDarkMode() {
+  darkMode = !darkMode;
+  if (darkMode) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+  saveData();
+  showToast(darkMode ? 'Modo oscuro activado' : 'Modo claro activado');
+}
+
+// --- NAVIGATION & TABS ---
+function switchTab(tabId) {
+  currentTab = tabId;
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.className = "nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800";
+  });
+  const activeBtn = document.getElementById(`nav-${tabId}`);
+  if (activeBtn) {
+    activeBtn.className = "nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400";
+  }
+  renderCurrentView();
+}
+
+function handleGlobalSearch(query) {
+  globalSearchQuery = query.toLowerCase();
+  if (currentTab !== 'actividades') {
+    switchTab('actividades');
+  } else {
+    renderActividadesView();
+  }
+}
+
+// --- RENDER ROUTER ---
+function renderCurrentView() {
+  updateHeaderProfile();
+  renderSidebarSubjects();
+  const container = document.getElementById('main-container');
+  container.innerHTML = '';
+
+  if (currentTab === 'inicio') {
+    container.innerHTML = getInicioHTML();
+    initInicioEvents();
+  } else if (currentTab === 'actividades') {
+    container.innerHTML = getActividadesHTML();
+    initActividadesEvents();
+  } else if (currentTab === 'calendario') {
+    container.innerHTML = getCalendarioHTML();
+  } else if (currentTab === 'estadisticas') {
+    container.innerHTML = getEstadisticasHTML();
+  } else if (currentTab === 'pomodoro') {
+    container.innerHTML = getPomodoroHTML();
+    initPomodoroEvents();
+  } else if (currentTab === 'notas') {
+    container.innerHTML = getNotasHTML();
+  }
+}
+
+function updateHeaderProfile() {
+  document.getElementById('user-name-display').textContent = userProfile.name;
+  document.getElementById('user-avatar-initial').textContent = userProfile.name.charAt(0).toUpperCase();
+}
+
+function renderSidebarSubjects() {
+  const container = document.getElementById('sidebar-subjects');
+  container.innerHTML = subjects.map(s => `
+    <div class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer" onclick="filterBySubjectSidebar('${s.name}')">
+      <span class="w-2.5 h-2.5 rounded-full ${s.color}"></span>
+      <span>${s.name}</span>
+    </div>
+  `).join('') + `<button onclick="openSubjectModal()" class="w-full text-left px-3 py-1.5 text-xs font-extrabold text-indigo-600 dark:text-indigo-400 hover:underline">+ Agregar ramo</button>`;
+}
+
+function filterBySubjectSidebar(subName) {
+  switchTab('actividades');
+  setTimeout(() => {
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      searchInput.value = subName;
+      renderActividadesView();
+    }
+  }, 50);
+}
+
+// --- 1. INICIO VIEW (Matches User Screenshot & Full Functionality) ---
+function getInicioHTML() {
+  const pendingCount = tasks.filter(t => !t.done).length;
+  const doneCount = tasks.filter(t => t.done).length;
+  const endWeek = new Date(today);
+  endWeek.setDate(endWeek.getDate() + 7);
+  const weekCount = tasks.filter(t => !t.done && new Date(t.date + 'T00:00:00') >= today && new Date(t.date + 'T00:00:00') < endWeek).length;
+  const overdueCount = tasks.filter(t => !t.done && new Date(t.date + 'T00:00:00') < today).length;
+  
+  const nextTask = tasks.filter(t => !t.done).sort((a,b) => a.date.localeCompare(b.date))[0] || {name: 'No hay actividades pendientes', subject: 'General', date: '2026-10-15', type: 'Entrega', priority: 'Media'};
+  
+  const pct = tasks.length === 0 ? 0 : Math.round((doneCount / tasks.length) * 100);
+
+  return `
+  <div class="space-y-8 animate-fade-in pb-12">
+    <!-- GREETING -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+          Hola, ${userProfile.name} 👋
+        </h2>
+        <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Pequeños pasos, grandes resultados.</p>
+      </div>
+      <button onclick="openTaskModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-3 rounded-2xl shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2 text-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+        Nueva Actividad
+      </button>
+    </div>
+
+    <!-- METRICS WIDGETS (Clickable to jump to tabs) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div onclick="switchTab('actividades')" class="glass-panel rounded-3xl p-5 shadow-sm cursor-pointer hover:border-indigo-500 transition-all flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          </div>
+          <span class="text-xs font-bold text-slate-400">→</span>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-black text-slate-900 dark:text-white">${pendingCount}</span>
+          <span class="text-xs text-slate-400 font-semibold">Pendientes</span>
+        </div>
+      </div>
+
+      <div onclick="switchTab('actividades')" class="glass-panel rounded-3xl p-5 shadow-sm cursor-pointer hover:border-emerald-500 transition-all flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+          </div>
+          <span class="text-xs font-bold text-slate-400">→</span>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-black text-slate-900 dark:text-white">${doneCount}</span>
+          <span class="text-xs text-slate-400 font-semibold">Completadas</span>
+        </div>
+      </div>
+
+      <div onclick="switchTab('actividades')" class="glass-panel rounded-3xl p-5 shadow-sm cursor-pointer hover:border-blue-500 transition-all flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          </div>
+          <span class="text-xs font-bold text-slate-400">→</span>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-black text-slate-900 dark:text-white">${weekCount}</span>
+          <span class="text-xs text-slate-400 font-semibold">Esta semana</span>
+        </div>
+      </div>
+
+      <div onclick="switchTab('actividades')" class="glass-panel rounded-3xl p-5 shadow-sm cursor-pointer hover:border-rose-500 transition-all flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          </div>
+          <span class="text-xs font-bold text-slate-400">→</span>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-black text-slate-900 dark:text-white">${overdueCount}</span>
+          <span class="text-xs text-slate-400 font-semibold">Vencidas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIDDLE ROW: NEXT ACTIVITY HERO & TODAY STATUS & MINI CALENDAR -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Next Activity Card (Left 6 cols) -->
+      <div class="lg:col-span-6 glass-panel rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between shadow-sm">
+        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Próxima actividad</span>
+            <span class="px-3 py-1 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-full text-xs font-extrabold border border-rose-100 dark:border-rose-900">Faltan 1 día</span>
+          </div>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">${escapeHtml(nextTask.name)}</h3>
+          <div class="flex flex-wrap items-center gap-2 mb-6">
+            <span class="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">${escapeHtml(nextTask.subject)}</span>
+            <span class="px-3 py-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${escapeHtml(nextTask.type)}</span>
+            <span class="px-3 py-1 rounded-xl text-xs font-bold bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400">${escapeHtml(nextTask.priority)}</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-2 text-xs font-bold text-slate-500">
+            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <span>Vence mañana · ${formatDate(nextTask.date)}</span>
+          </div>
+          <button onclick="switchTab('actividades')" class="px-4 py-2 bg-slate-900 dark:bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-md">
+            Ver detalles →
+          </button>
+        </div>
+      </div>
+
+      <!-- Tu día de hoy (Right 6 cols split in two mini widgets) -->
+      <div class="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+        
+        <!-- Today Ring Progress -->
+        <div class="glass-panel rounded-3xl p-6 flex flex-col justify-between shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Tu día de hoy</span>
+          </div>
+          <div class="flex items-center justify-center my-3">
+            <div class="relative w-24 h-24 flex items-center justify-center">
+              <svg class="w-full h-full transform -rotate-90">
+                <circle cx="48" cy="48" r="38" stroke="currentColor" stroke-width="8" class="text-slate-100 dark:text-slate-800 fill-none"></circle>
+                <circle cx="48" cy="48" r="38" stroke="currentColor" stroke-width="8" class="text-indigo-600 fill-none" stroke-dasharray="238.7" stroke-dashoffset="${238.7 - (238.7 * (doneCount / (tasks.length || 1)))}"></circle>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span class="text-lg font-black text-slate-900 dark:text-white">${doneCount}/${tasks.length}</span>
+                <span class="text-[10px] text-slate-400 font-bold">actividades</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-indigo-50/60 dark:bg-indigo-950/40 rounded-2xl p-3 border border-indigo-100 dark:border-indigo-900/50 flex items-center gap-2.5">
+            <span class="text-indigo-600 dark:text-indigo-400 text-base">✨</span>
+            <span class="text-xs font-bold text-indigo-900 dark:text-indigo-200">¡Vas bien! Concentra tu energía en lo importante.</span>
+          </div>
+        </div>
+
+        <!-- Mini Calendar Widget -->
+        <div onclick="switchTab('calendario')" class="glass-panel rounded-3xl p-6 flex flex-col justify-between shadow-sm cursor-pointer hover:border-indigo-500 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Octubre 2026</span>
+            <span class="text-xs font-bold text-indigo-600">Ver calendario →</span>
+          </div>
+          <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-slate-400 mb-1">
+            <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+          </div>
+          <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold">
+            <span class="text-slate-300">28</span><span class="text-slate-300">29</span><span class="text-slate-300">30</span><span>1</span><span>2</span><span>3</span><span>4</span>
+            <span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span class="bg-indigo-600 text-white rounded-full py-0.5">10</span><span>11</span>
+            <span>12</span><span>13</span><span class="bg-indigo-100 dark:bg-indigo-950 text-indigo-600 rounded-full py-0.5 font-bold">14</span><span class="bg-indigo-600 text-white rounded-full py-0.5 font-bold">15</span><span>16</span><span>17</span><span>18</span>
+          </div>
+          <div class="text-[11px] text-slate-400 font-medium text-center mt-2">Haz clic para ver la carga completa</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- LOWER ROW: MINI ACTIVITIES TABLE & SIDE WIDGETS -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- Recent Activities Table (8 cols) -->
+      <div class="lg:col-span-8 glass-panel rounded-3xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="text-lg font-extrabold">Mis actividades recientes</h3>
+          <button onclick="switchTab('actividades')" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Ver todas →</button>
+        </div>
+        <div class="space-y-3">
+          ${tasks.slice(0, 5).map(t => {
+            const urg = getUrgencyInfo(t.date);
+            return `
+              <div class="flex items-center justify-between p-3.5 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 hover:border-slate-300 transition-all">
+                <div class="flex items-center gap-3.5">
+                  <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask(${t.id})" class="w-5 h-5 rounded-lg accent-indigo-600 cursor-pointer">
+                  <div>
+                    <h4 class="text-sm font-extrabold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}">${escapeHtml(t.name)}</h4>
+                    <p class="text-xs text-slate-400 font-medium">${escapeHtml(t.subject)} · ${formatDate(t.date)}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${urg.cls}">${urg.text}</span>
+                  ${t.photo ? `<button onclick="openCameraModal(${t.id})" class="p-1.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 rounded-xl" title="Foto adjunta">📷</button>` : `<button onclick="openCameraModal(${t.id})" class="p-1.5 text-slate-400 hover:text-indigo-600 rounded-xl" title="Sacar foto">📷</button>`}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Right Side Widgets (4 cols): Pomodoro Mini & Semester Progress Mini -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Mini Pomodoro Widget -->
+        <div onclick="switchTab('pomodoro')" class="glass-panel rounded-3xl p-6 shadow-sm cursor-pointer hover:border-indigo-500 transition-all relative overflow-hidden">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Temporizador Pomodoro</span>
+            <span class="text-xs font-bold text-indigo-600">Abrir ⏱️</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-2xl font-black font-mono">25:00</h4>
+              <p class="text-xs text-slate-400 mt-0.5">Estudiar para prueba</p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-lg shadow-indigo-500/30">
+              ▶
+            </div>
+          </div>
+        </div>
+
+        <!-- Semester Progress Mini -->
+        <div onclick="switchTab('estadisticas')" class="glass-panel rounded-3xl p-6 shadow-sm cursor-pointer hover:border-indigo-500 transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Progreso del semestre</span>
+            <span class="text-xs font-bold text-indigo-600">Ver más →</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="relative w-16 h-16 flex items-center justify-center">
+              <svg class="w-full h-full transform -rotate-90">
+                <circle cx="32" cy="32" r="26" stroke="currentColor" stroke-width="6" class="text-slate-100 dark:text-slate-800 fill-none"></circle>
+                <circle cx="32" cy="32" r="26" stroke="currentColor" stroke-width="6" class="text-indigo-600 fill-none" stroke-dasharray="163.3" stroke-dashoffset="${163.3 - (163.3 * (pct / 100))}"></circle>
+              </svg>
+              <span class="absolute text-xs font-black">${pct}%</span>
+            </div>
+            <div class="space-y-1 text-xs font-bold text-slate-600 dark:text-slate-300">
+              <p>✅ ${doneCount} Completadas</p>
+              <p>⏳ ${pendingCount} Pendientes</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+  `;
+}
+
+function initInicioEvents() {}
+
+// --- 2. MIS ACTIVIDADES VIEW ---
+function getActividadesHTML() {
+  return `
+  <div class="space-y-6 animate-fade-in pb-12">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h2 class="text-3xl font-extrabold tracking-tight">Mis Actividades</h2>
+        <p class="text-sm font-medium text-slate-500 mt-1">Gestiona, filtra y actualiza tus entregas semestrales.</p>
+      </div>
+      <button onclick="openTaskModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-3 rounded-2xl shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2 text-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+        Nueva Actividad
+      </button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="glass-panel rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
+      <div class="relative w-full sm:w-80">
+        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </span>
+        <input id="search-input" oninput="renderActividadesView()" class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold outline-none" placeholder="Buscar por nombre, ramo..." value="${escapeHtml(globalSearchQuery)}">
+      </div>
+      <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+        <select id="filter-select" onchange="renderActividadesView()" class="px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold outline-none cursor-pointer">
+          <option value="all">Todas</option>
+          <option value="pending" selected>Pendientes</option>
+          <option value="done">Completadas</option>
+        </select>
+        <select id="sort-select" onchange="renderActividadesView()" class="px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold outline-none cursor-pointer">
+          <option value="priority">Prioridad + Fecha</option>
+          <option value="date">Fecha más próxima</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Task List Container -->
+    <div id="full-task-list" class="space-y-3.5">
+      <!-- Rendered dynamically -->
+    </div>
+  </div>
+  `;
+}
+
+function initActividadesEvents() {
+  renderActividadesView();
+}
+
+function renderActividadesView() {
+  const listContainer = document.getElementById('full-task-list');
+  if (!listContainer) return;
+
+  const q = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const f = document.getElementById('filter-select')?.value || 'pending';
+  const s = document.getElementById('sort-select')?.value || 'priority';
+
+  let arr = [...tasks];
+  if (q) arr = arr.filter(t => (t.name + ' ' + t.subject + ' ' + t.type).toLowerCase().includes(q));
+  if (f === 'pending') arr = arr.filter(t => !t.done);
+  if (f === 'done') arr = arr.filter(t => t.done);
+
+  const rank = { Alta: 0, Media: 1, Baja: 2 };
+  arr.sort((a,b) => {
+    if (s === 'date') return a.date.localeCompare(b.date);
+    const pDiff = rank[a.priority] - rank[b.priority];
+    return pDiff !== 0 ? pDiff : a.date.localeCompare(b.date);
+  });
+
+  if (!arr.length) {
+    listContainer.innerHTML = `
+      <div class="glass-panel rounded-3xl p-12 text-center">
+        <p class="text-sm font-bold text-slate-400">No hay actividades que coincidan con la búsqueda.</p>
+      </div>`;
+    return;
+  }
+
+  listContainer.innerHTML = arr.map(t => {
+    const urg = getUrgencyInfo(t.date);
+    return `
+      <div class="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all hover:shadow-md ${t.done ? 'opacity-60 bg-slate-50/50' : ''}">
+        <div class="flex items-start sm:items-center gap-4 flex-1">
+          <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask(${t.id})" class="w-5 h-5 rounded-lg accent-indigo-600 cursor-pointer mt-1 sm:mt-0">
+          <div>
+            <h4 class="text-base font-extrabold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'} mb-1">${escapeHtml(t.name)}</h4>
+            <div class="flex flex-wrap items-center gap-2 text-xs font-bold">
+              <span class="text-slate-500">${escapeHtml(t.subject)}</span>
+              <span>·</span>
+              <span class="${urg.cls}">${urg.text}</span>
+              <span>·</span>
+              <span class="text-slate-400">${formatDate(t.date)}</span>
+              <span class="px-2.5 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">${escapeHtml(t.type)}</span>
+              <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${escapeHtml(t.priority)}</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 self-end sm:self-center">
+          ${t.photo ? `<span class="px-2 py-1 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-bold flex items-center gap-1">📷 1 foto</span>` : `<button onclick="openCameraModal(${t.id})" class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all" title="Sacar foto">📷</button>`}
+          <button onclick="openTaskModal(${t.id})" class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all" title="Editar">✏️</button>
+          <button onclick="deleteTask(${t.id})" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all" title="Eliminar">🗑️</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// --- 3. CALENDARIO VIEW ---
+function getCalendarioHTML() {
+  return `
+  <div class="space-y-6 animate-fade-in pb-12">
+    <div>
+      <h2 class="text-3xl font-extrabold tracking-tight">Calendario Semestral</h2>
+      <p class="text-sm font-medium text-slate-500 mt-1">Visualiza la densidad de tus entregas y pruebas por día.</p>
+    </div>
+
+    <div class="glass-panel rounded-3xl p-8 shadow-sm">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-black">Octubre 2026</h3>
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-400">
+          <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Liviano</span>
+          <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-500"></span> Moderado</span>
+          <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-500"></span> Saturado</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-7 gap-2 text-center text-xs font-extrabold text-slate-400 mb-2">
+        <span>Lunes</span><span>Martes</span><span>Miércoles</span><span>Jueves</span><span>Viernes</span><span>Sábado</span><span>Domingo</span>
+      </div>
+
+      <div class="grid grid-cols-7 gap-3">
+        <!-- Mock calendar grid with load indicators -->
+        ${Array.from({length: 31}, (_, i) => {
+          const day = i + 1;
+          const isHeavy = [15, 16, 20].includes(day);
+          const isModerate = [14, 18, 22].includes(day);
+          const isToday = day === 10;
+          const colorDot = isHeavy ? 'bg-rose-500' : (isModerate ? 'bg-amber-500' : 'bg-emerald-500');
+          return `
+            <div class="h-28 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60 p-3 flex flex-col justify-between hover:border-indigo-500 transition-all cursor-pointer">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-extrabold ${isToday ? 'bg-indigo-600 text-white w-7 h-7 rounded-full flex items-center justify-center' : ''}">${day}</span>
+                <span class="w-2 h-2 rounded-full ${colorDot}"></span>
+              </div>
+              <div class="text-[10px] font-bold text-slate-400">
+                ${isHeavy ? '🔥 2 entregas' : (isModerate ? '⚡ 1 entrega' : '✨ Libre')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+// --- 4. ESTADÍSTICAS VIEW ---
+function getEstadisticasHTML() {
+  const doneCount = tasks.filter(t => t.done).length;
+  const pendingCount = tasks.filter(t => !t.done).length;
+  const pct = tasks.length === 0 ? 0 : Math.round((doneCount / tasks.length) * 100);
+
+  return `
+  <div class="space-y-6 animate-fade-in pb-12">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h2 class="text-3xl font-extrabold tracking-tight">Estadísticas y Avance</h2>
+        <p class="text-sm font-medium text-slate-500 mt-1">Métricas de rendimiento de tu semestre académico.</p>
+      </div>
+      <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl text-xs font-bold">
+        <button onclick="showStatRange('dia')" id="btn-stat-dia" class="px-4 py-2 rounded-xl transition-all bg-white dark:bg-slate-700 shadow-sm">Por día</button>
+        <button onclick="showStatRange('semana')" id="btn-stat-semana" class="px-4 py-2 rounded-xl transition-all text-slate-500">Por semana</button>
+        <button onclick="showStatRange('mes')" id="btn-stat-mes" class="px-4 py-2 rounded-xl transition-all text-slate-500">Por mes</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-8 glass-panel rounded-3xl p-8 shadow-sm">
+        <h3 class="text-lg font-extrabold mb-6">Gráfico de completitud de tareas</h3>
+        <div class="h-64 flex items-end justify-between gap-4 pt-10 px-4 border-b border-slate-200 dark:border-slate-700">
+          <div class="w-1/6 bg-indigo-500/20 rounded-t-xl h-32 flex items-center justify-center font-bold text-xs">L</div>
+          <div class="w-1/6 bg-indigo-500/40 rounded-t-xl h-44 flex items-center justify-center font-bold text-xs">M</div>
+          <div class="w-1/6 bg-indigo-600 rounded-t-xl h-60 flex items-center justify-center font-bold text-xs text-white">Mi</div>
+          <div class="w-1/6 bg-indigo-500/30 rounded-t-xl h-24 flex items-center justify-center font-bold text-xs">J</div>
+          <div class="w-1/6 bg-indigo-500/50 rounded-t-xl h-48 flex items-center justify-center font-bold text-xs">V</div>
+          <div class="w-1/6 bg-slate-200 dark:bg-slate-700 rounded-t-xl h-12 flex items-center justify-center font-bold text-xs">S</div>
+        </div>
+        <p class="text-xs text-slate-400 font-medium text-center mt-4">Rendimiento óptimo detectado los días miércoles.</p>
+      </div>
+
+      <div class="lg:col-span-4 glass-panel rounded-3xl p-8 shadow-sm flex flex-col justify-between">
+        <h3 class="text-lg font-extrabold mb-4">Resumen General</h3>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span>Progreso total</span>
+              <span>${pct}%</span>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
+              <div class="bg-indigo-600 h-full rounded-full transition-all duration-700" style="width: ${pct}%"></div>
+            </div>
+          </div>
+          <div class="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800 text-xs font-bold">
+            <div class="flex justify-between"><span>✅ Completadas:</span> <span>${doneCount}</span></div>
+            <div class="flex justify-between"><span>⏳ Pendientes:</span> <span>${pendingCount}</span></div>
+            <div class="flex justify-between"><span>📚 Asignaturas:</span> <span>${subjects.length}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function showStatRange(range) {
+  ['dia', 'semana', 'mes'].forEach(r => {
+    const btn = document.getElementById(`btn-stat-${r}`);
+    if (btn) {
+      if (r === range) {
+        btn.className = "px-4 py-2 rounded-xl transition-all bg-white dark:bg-slate-700 shadow-sm";
+      } else {
+        btn.className = "px-4 py-2 rounded-xl transition-all text-slate-500";
+      }
+    }
+  });
+  showToast(`Vista cambiada a: ${range}`);
+}
+
+// --- 5. POMODORO VIEW ---
+function getPomodoroHTML() {
+  const minsStr = String(pomodoroMinutes).padStart(2, '0');
+  const secsStr = String(pomodoroSeconds).padStart(2, '0');
+
+  return `
+  <div class="space-y-6 animate-fade-in pb-12 max-w-4xl mx-auto">
+    <div>
+      <h2 class="text-3xl font-extrabold tracking-tight">Temporizador Pomodoro</h2>
+      <p class="text-sm font-medium text-slate-500 mt-1">Bloques de concentración profunda para potenciar tu estudio.</p>
+    </div>
+
+    <div class="glass-panel rounded-3xl p-10 shadow-xl text-center relative overflow-hidden">
+      <div class="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-extrabold px-4 py-1.5 rounded-full text-xs mb-8 border border-indigo-100 dark:border-indigo-900">
+        <span class="w-2 h-2 rounded-full bg-indigo-600 animate-ping"></span>
+        Modo Concentración Activa
+      </div>
+
+      <div class="text-7xl sm:text-8xl font-black font-mono tracking-tighter mb-8 text-slate-900 dark:text-white" id="pomo-clock">
+        ${minsStr}:${secsStr}
+      </div>
+
+      <div class="flex items-center justify-center gap-4 mb-10">
+        <button onclick="togglePomodoroTimer()" id="pomo-main-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-10 rounded-2xl shadow-xl shadow-indigo-500/30 transition-all active:scale-95 text-base">
+          ${pomodoroRunning ? 'Pausar' : 'Iniciar Sesión'}
+        </button>
+        <button onclick="resetPomodoroTimer()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold py-4 px-6 rounded-2xl transition-all text-base">
+          Reiniciar
+        </button>
+      </div>
+
+      <!-- Settings panel -->
+      <div class="max-w-md mx-auto pt-6 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-4 text-left">
+        <div>
+          <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Tiempo de Estudio (min)</label>
+          <input type="number" id="setting-work-time" value="${workDuration}" onchange="updatePomodoroSettings()" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold outline-none">
+        </div>
+        <div>
+          <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Tiempo de Descanso (min)</label>
+          <input type="number" id="setting-break-time" value="${breakDuration}" onchange="updatePomodoroSettings()" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold outline-none">
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function initPomodoroEvents() {}
+
+function togglePomodoroTimer() {
+  const btn = document.getElementById('pomo-main-btn');
+  if (pomodoroRunning) {
+    clearInterval(pomodoroInterval);
+    pomodoroRunning = false;
+    if (btn) btn.textContent = 'Reanudar';
+  } else {
+    pomodoroRunning = true;
+    if (btn) btn.textContent = 'Pausar';
+    pomodoroInterval = setInterval(() => {
+      if (pomodoroSeconds > 0) {
+        pomodoroSeconds--;
+      } else if (pomodoroMinutes > 0) {
+        pomodoroMinutes--;
+        pomodoroSeconds = 59;
+      } else {
+        clearInterval(pomodoroInterval);
+        pomodoroRunning = false;
+        showToast('¡Sesión de Pomodoro completada con éxito! 🚀');
+        resetPomodoroTimer();
+      }
+      const clock = document.getElementById('pomo-clock');
+      if (clock) {
+        clock.textContent = `${String(pomodoroMinutes).padStart(2,'0')}:${String(pomodoroSeconds).padStart(2,'0')}`;
+      }
+    }, 1000);
+  }
+}
+
+function resetPomodoroTimer() {
+  clearInterval(pomodoroInterval);
+  pomodoroRunning = false;
+  pomodoroMinutes = workDuration;
+  pomodoroSeconds = 0;
+  const clock = document.getElementById('pomo-clock');
+  const btn = document.getElementById('pomo-main-btn');
+  if (clock) clock.textContent = `${String(pomodoroMinutes).padStart(2,'0')}:00`;
+  if (btn) btn.textContent = 'Iniciar Sesión';
+}
+
+function updatePomodoroSettings() {
+  workDuration = parseInt(document.getElementById('setting-work-time').value) || 25;
+  breakDuration = parseInt(document.getElementById('setting-break-time').value) || 5;
+  resetPomodoroTimer();
+  showToast('Tiempos actualizados');
+}
+
+// --- 6. NOTAS RÁPIDAS VIEW (Post-its) ---
+function getNotasHTML() {
+  return `
+  <div class="space-y-6 animate-fade-in pb-12">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h2 class="text-3xl font-extrabold tracking-tight">Notas Rápidas (Post-its)</h2>
+        <p class="text-sm font-medium text-slate-500 mt-1">Recordatorios flotantes de cosas importantes por hacer.</p>
+      </div>
+      <button onclick="openNewNotePrompt()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-3 rounded-2xl shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2 text-sm">
+        + Nuevo Post-it
+      </button>
+    </div>
+
+    <!-- Post-its Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="notes-grid">
+      ${notes.map(n => {
+        const bgColors = n.color === 'yellow' ? 'bg-amber-100 text-amber-900 border-amber-200' : (n.color === 'blue' ? 'bg-indigo-100 text-indigo-900 border-indigo-200' : 'bg-emerald-100 text-emerald-900 border-emerald-200');
+        return `
+          <div class="${bgColors} rounded-3xl p-6 border shadow-sm relative flex flex-col justify-between h-48 transform hover:-translate-y-1 transition-all">
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider opacity-60">${n.date}</span>
+                <button onclick="deleteNote(${n.id})" class="opacity-60 hover:opacity-150 font-bold">×</button>
+              </div>
+              <p class="text-sm font-bold leading-relaxed">${escapeHtml(n.text)}</p>
+            </div>
+            <div class="text-[10px] font-extrabold opacity-40 uppercase tracking-widest">Recordatorio FOCO</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  </div>
+  `;
+}
+
+function openNewNotePrompt() {
+  const text = prompt('Escribe el contenido de tu nota rápida / post-it:');
+  if (text && text.trim()) {
+    const colors = ['yellow', 'blue', 'emerald'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    notes.unshift({
+      id: Date.now(),
+      text: text.trim(),
+      color: randomColor,
+      date: new Date().toLocaleDateString('es-CL', {day: '2-digit', month: 'short'})
+    });
+    saveData();
+    renderCurrentView();
+    showToast('Post-it creado');
+  }
+}
+
+function deleteNote(id) {
+  notes = notes.filter(n => n.id !== id);
+  saveData();
+  renderCurrentView();
+  showToast('Post-it eliminado', 'error');
+}
+
+// --- GENERAL MODALS & ACTIONS ---
+function openTaskModal(taskId = null) {
+  const modal = document.getElementById('task-modal');
+  const title = document.getElementById('task-modal-title');
+  const subjectSelect = document.getElementById('modal-f-subject');
+
+  subjectSelect.innerHTML = subjects.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+
+  if (taskId) {
+    const t = tasks.find(x => x.id === taskId);
+    if (t) {
+      title.textContent = 'Editar Actividad';
+      document.getElementById('edit-task-id').value = t.id;
+      document.getElementById('modal-f-name').value = t.name;
+      document.getElementById('modal-f-subject').value = t.subject;
+      document.getElementById('modal-f-date').value = t.date;
+      document.getElementById('modal-f-type').value = t.type;
+      document.getElementById('modal-f-priority').value = t.priority;
+    }
+  } else {
+    title.textContent = 'Nueva Actividad';
+    document.getElementById('edit-task-id').value = '';
+    document.getElementById('modal-f-name').value = '';
+    document.getElementById('modal-f-date').value = new Date().toISOString().split('T0')[0];
+  }
+  modal.classList.remove('hidden');
+}
+
+function closeTaskModal() {
+  document.getElementById('task-modal').classList.add('hidden');
+}
+
+function saveTaskModal() {
+  const id = document.getElementById('edit-task-id').value;
+  const name = document.getElementById('modal-f-name').value.trim();
+  const subject = document.getElementById('modal-f-subject').value;
+  const date = document.getElementById('modal-f-date').value;
+  const type = document.getElementById('modal-f-type').value;
+  const priority = document.getElementById('modal-f-priority').value;
+
+  if (!name || !date) {
+    showToast('Completa el nombre y la fecha', 'error');
+    return;
+  }
+
+  if (id) {
+    const t = tasks.find(x => x.id == id);
+    if (t) {
+      t.name = name; t.subject = subject; t.date = date; t.type = type; t.priority = priority;
+    }
+    showToast('Actividad actualizada');
+  } else {
+    tasks.push({
+      id: Date.now(),
+      name, subject, date, type, priority, done: false, photo: null
+    });
+    showToast('Actividad creada con éxito');
+  }
+  saveData();
+  closeTaskModal();
+  renderCurrentView();
+}
+
+function toggleTask(id) {
+  const t = tasks.find(x => x.id === id);
+  if (t) {
+    t.done = !t.done;
+    saveData();
+    renderCurrentView();
+    if (t.done) showToast('¡Actividad completada!');
+  }
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(x => x.id !== id);
+  saveData();
+  renderCurrentView();
+  showToast('Actividad eliminada', 'error');
+}
+
+// Camera Simulator
+function openCameraModal(taskId) {
+  photoTargetTaskId = taskId;
+  document.getElementById('camera-modal').classList.remove('hidden');
+}
+
+function closeCameraModal() {
+  document.getElementById('camera-modal').classList.add('hidden');
+  photoTargetTaskId = null;
+}
+
+function simulateCapturePhoto() {
+  if (photoTargetTaskId) {
+    const t = tasks.find(x => x.id === photoTargetTaskId);
+    if (t) {
+      t.photo = 'captured';
+      saveData();
+      showToast('¡Foto de evidencia guardada con éxito! 📸');
+    }
+  }
+  closeCameraModal();
+  renderCurrentView();
+}
+
+// Profile Modal
+function openProfileModal() {
+  document.getElementById('input-profile-name').value = userProfile.name;
+  document.getElementById('profile-modal-name').textContent = userProfile.name;
+  document.getElementById('profile-modal-initial').textContent = userProfile.name.charAt(0).toUpperCase();
+  document.getElementById('profile-modal').classList.remove('hidden');
+}
+
+function closeProfileModal() {
+  document.getElementById('profile-modal').classList.add('hidden');
+}
+
+function saveProfile() {
+  const newName = document.getElementById('input-profile-name').value.trim();
+  if (newName) {
+    userProfile.name = newName;
+    saveData();
+    updateHeaderProfile();
+    closeProfileModal();
+    showToast('Perfil actualizado');
+    renderCurrentView();
+  }
+}
+
+// Subject Modal
+function openSubjectModal() {
+  document.getElementById('subject-modal').classList.remove('hidden');
+}
+
+function closeSubjectModal() {
+  document.getElementById('subject-modal').classList.add('hidden');
+}
+
+function saveNewSubject() {
+  const name = document.getElementById('new-subject-name').value.trim();
+  const color = document.getElementById('new-subject-color').value;
+  if (name) {
+    if (!subjects.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+      subjects.push({name, color});
+      saveData();
+      renderSidebarSubjects();
+      closeSubjectModal();
+      showToast(`Asignatura "${name}" agregada`);
+    } else {
+      showToast('Ese ramo ya existe', 'error');
+    }
+  }
+}
+
+// Utility Helpers
+function getUrgencyInfo(dateStr) {
+  const tDate = new Date(dateStr + 'T00:00:00');
+  const diffDays = Math.ceil((tDate - today) / (1000 * 60 * 60 * 24));
+  if (diffDays < 0) return { text: "Vencida", cls: "text-rose-600 bg-rose-50 dark:bg-rose-950/50" };
+  if (diffDays === 0) return { text: "Vence hoy", cls: "text-amber-600 bg-amber-50 dark:bg-amber-950/50" };
+  if (diffDays === 1) return { text: "Vence mañana", cls: "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50" };
+  return { text: `Faltan ${diffDays} días`, cls: "text-slate-500 bg-slate-100 dark:bg-slate-800" };
+}
+
+function formatDate(d) {
+  return new Date(d + 'T00:00:00').toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function escapeHtml(str) {
+  return (str || '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+// Initial Render
+renderCurrentView();
+</script>
+</body>
+</html>
